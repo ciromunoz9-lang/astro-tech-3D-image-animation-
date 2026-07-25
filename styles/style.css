@@ -8,20 +8,9 @@ html,
 body {
   height: 100%;
   overflow: hidden;
-  background: #000;
+  background: #05060b;
   color: #eaf6ff;
   font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-}
-
-/* the source <video> feeds the texture only — never shown directly */
-#source {
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  opacity: 0;
-  pointer-events: none;
-  top: -10px;
-  left: -10px;
 }
 
 canvas {
@@ -46,7 +35,7 @@ canvas {
   color: rgba(234, 246, 255, 0.55);
   pointer-events: none;
   opacity: 0;
-  transition: opacity 1s ease 0.6s;
+  transition: opacity 1s ease 0.4s;
 }
 
 .caption.is-visible {
@@ -63,7 +52,7 @@ canvas {
   align-items: center;
   justify-content: center;
   gap: 1.25rem;
-  background: #000;
+  background: #05060b;
   color: rgba(234, 246, 255, 0.75);
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -89,39 +78,6 @@ canvas {
   to {
     transform: rotate(360deg);
   }
-}
-
-/* --- click-to-start gate --- */
-.playgate {
-  position: fixed;
-  inset: 0;
-  z-index: 11;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  background: rgba(0, 0, 0, 0.85);
-  border: none;
-  color: #eaf6ff;
-  cursor: pointer;
-  font: inherit;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  font-size: 0.8rem;
-}
-
-.playgate[hidden] {
-  display: none;
-}
-
-.playgate__icon {
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 18px 0 18px 30px;
-  border-color: transparent transparent transparent #6ad7ff;
-  filter: drop-shadow(0 0 16px rgba(106, 215, 255, 0.5));
 }
 
 @media (prefers-reduced-motion: reduce) {
