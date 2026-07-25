@@ -1,0 +1,54 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  background:
+    radial-gradient(120% 90% at 50% 0%, #0a0f24 0%, #05060f 55%, #03030a 100%);
+  color: #eaf6ff;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+/* --- demo page chrome (not part of the embeddable component) --- */
+.page {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 5vw, 4rem) clamp(1rem, 4vw, 3rem);
+}
+
+.page__title {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  background: linear-gradient(120deg, #6ad7ff, #b388ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.page__lead {
+  margin: 0.5rem 0 1.5rem;
+  color: rgba(234, 246, 255, 0.7);
+  letter-spacing: 0.04em;
+}
+
+.page__note {
+  margin-top: 1rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(234, 246, 255, 0.45);
+}
+
+/* --- the embeddable hero: a 16:9 block --- */
+.astro-hero {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+}

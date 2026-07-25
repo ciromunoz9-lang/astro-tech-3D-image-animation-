@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Astro Tech · 3D Photo Hero</title>
+  <link
+    rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='38' fill='%23ffd257'/></svg>"
+  />
+  <link rel="stylesheet" href="./styles/style.css" />
+</head>
+<body>
+  <main class="page">
+    <h1 class="page__title">Astro Tech</h1>
+    <p class="page__lead">A depth-parallax 3D photo — move your cursor over it.</p>
+
+    <!-- ============================================================= -->
+    <!--  DROP-IN 3D PHOTO HERO  (16:9 embeddable block)               -->
+    <!--  Copy this block into any page; adjust data-* to taste.       -->
+    <!-- ============================================================= -->
+    <div
+      id="astro-hero"
+      class="astro-hero"
+      data-photo="./assets/photo.jpg"
+      data-depth="./assets/depth.png"
+      data-fill="0.55"
+      data-center-y="0.57"
+    ></div>
+
+    <script type="importmap">
+      { "imports": { "three": "./vendor/three.module.js" } }
+    </script>
+    <script type="module" src="./js/astro-hero.js"></script>
+    <!-- ============================================================= -->
+
+    <p class="page__note">
+      16:9 block · self-contained · Three.js only · runs offline
+    </p>
+  </main>
+</body>
+</html>
