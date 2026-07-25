@@ -1,73 +1,91 @@
-# Astro Tech · 3D Photo Animation
+# Astro Tech · 3D Photo Hero
 
-A single still — a hero frame from the astronaut clip — turned into a living
-**3D photo** with **Three.js** + **GSAP**. A depth map drives a fragment shader
-that offsets each pixel by its depth: near pixels (the astronaut) shift more than
-far ones (the sun, the stars), so moving the cursor — or just watching the
-ambient sway — reveals genuine parallax depth. Sized as a full-bleed website
-hero, with the letterbox area filled by a blurred cover of the same image.
+A drop-in **3D-photo hero** for any website. A still + a depth map become a
+depth-parallax "3D photo": near pixels (the astronaut) shift more than far ones
+(the sun, the stars) as the visitor moves the cursor — with a gentle ambient
+sway when idle. Ships as a self-contained **16:9 block**. Only dependency is
+**Three.js** (vendored, offline).
 
-## How it works
+## Drop-in usage
 
-| Piece            | Role                                                           |
-| ---------------- | -------------------------------------------------------------- |
-| `assets/photo.jpg` | the colour image (hero frame)                                |
-| `assets/depth.png` | per-pixel depth — **white = near, black = far**              |
-| Fragment shader  | offsets UVs by `depth × pointer` → parallax; blurred fill bg   |
-| GSAP             | a slow figure-eight ambient sway + gentle Ken-Burns zoom       |
-| Pointer          | mouse / touch / device-tilt add a stronger, eased parallax     |
+Copy this into any page and host the `assets/`, `vendor/`, and `js/` folders
+alongside it:
 
-Ambient motion (GSAP) and pointer parallax are composed together in the render
-loop, never overwriting each other. `prefers-reduced-motion` disables the
-ambient animation.
+```html
+<div
+  id="astro-hero"
+  data-photo="./assets/photo.jpg"
+  data-depth="./assets/depth.png"
+  data-fill="0.55"
+  data-center-y="0.57"
+  style="width:100%; max-width:1600px; aspect-ratio:16/9;"
+></div>
 
-## Framing / "website size"
-
-The source frame is portrait (816×1104). The shader scales it between **contain**
-(whole photo, letterboxed) and **cover** (full-bleed, cropped) so it fits a
-widescreen hero. Tune it in `js/main.js`:
-
-```js
-uFill:    { value: 0.55 }  // 0 = whole photo + bars · 1 = full-bleed (more crop)
-uCenterY: { value: 0.57 }  // vertical crop centre (raise to keep more of the feet)
-uZoom:    { value: 1.08 }  // parallax safety margin + Ken-Burns base
+<script type="importmap">
+  { "imports": { "three": "./vendor/three.module.js" } }
+</script>
+<script type="module" src="./js/astro-hero.js"></script>
 ```
 
-- Want the **entire astronaut** (head to feet) visible? Lower `uFill` toward
-  `0.2–0.3` (the sides get blurred-fill bars).
-- Want an **edge-to-edge** banner? Raise `uFill` toward `1.0` (crops top/bottom).
+Any element with `id="astro-hero"` or a `data-astro-hero` attribute is mounted
+automatically. The block is **16:9** by default; override with your own CSS
+`aspect-ratio` (or set `data-no-aspect` and size it yourself). Multiple heroes
+on one page are supported.
+
+### Mount it yourself
+
+```js
+import { mountAstroHero } from "./js/astro-hero.js";
+const hero = mountAstroHero(document.querySelector("#hero"), { fill: 0.4 });
+hero.setFill(0.7);   // retune live
+hero.destroy();      // tear down
+```
+
+## Options (data-\* attributes or opts)
+
+| Option        | Default     | Meaning                                                    |
+| ------------- | ----------- | ---------------------------------------------------------- |
+| `photo`       | photo.jpg   | colour image                                               |
+| `depth`       | depth.png   | depth map — **white = near, black = far**                  |
+| `image-aspect`| 816/1104    | source image aspect ratio                                  |
+| `fill`        | 0.55        | 0 = whole photo + blurred bars · 1 = full-bleed (crops)    |
+| `center-y`    | 0.57        | vertical crop centre (raise to keep more of the feet)      |
+| `zoom`        | 1.08        | parallax safety margin + Ken-Burns base                    |
+| `pointer-amp` | 0.026       | strength of the cursor/tilt parallax                       |
+| `ambient-amp` | 0.01        | strength of the idle sway                                  |
+
+- Want the **entire astronaut** head-to-feet? Lower `fill` toward `0.2–0.3`.
+- Want **edge-to-edge**? Raise `fill` toward `1.0`.
+
+Events: the element emits `astro-hero:ready` and `astro-hero:error`.
+`prefers-reduced-motion` disables the ambient motion.
 
 ## Regenerating the depth map
 
-The depth map is generated from the frame by `tools/make_depth.py` (heuristic:
-center bias + luminance, with the sun masked to "far", then blurred). To use a
-different frame or your own photo, drop it in and re-run:
+`tools/make_depth.py` builds the depth map from the photo (center bias +
+luminance, sun masked to "far", blurred). Swap in your own photo and re-run:
 
 ```bash
-python3 tools/make_depth.py path/to/photo.jpg
+python3 tools/make_depth.py path/to/photo.jpg assets/depth.png
 ```
 
-For a higher-fidelity result you can replace `depth.png` with the output of any
-monocular depth estimator (MiDaS, Depth-Anything, etc.) — white = near.
+For higher fidelity, replace `depth.png` with output from a monocular depth
+model (MiDaS, Depth-Anything, …); white = near.
 
-## Running locally
-
-Serve over HTTP (modules + textures won't load from a `file://` page):
+## Running the demo
 
 ```bash
 python3 -m http.server 8000
 # open http://localhost:8000
 ```
 
-Runs fully offline — Three.js and GSAP are vendored in `/vendor`.
-
 ## Files
 
 ```
-index.html        markup, import map, vendored scripts
-styles/style.css  layout, loader, caption
-js/main.js        shader, depth parallax, GSAP ambient, fill/framing controls
+index.html        demo page embedding the hero as a 16:9 block
+styles/style.css  demo-page chrome + .astro-hero block styling
+js/astro-hero.js  the reusable drop-in component (Three.js only)
 assets/           photo.jpg + depth.png
 tools/            make_depth.py (depth-map generator)
-vendor/           three.module.js + gsap.min.js
+vendor/           three.module.js
 ```
