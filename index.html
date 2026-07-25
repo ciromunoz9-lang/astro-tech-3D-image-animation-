@@ -13,18 +13,34 @@
 <body>
   <div id="loader" aria-live="polite">
     <div class="loader__ring"></div>
-    <p>Initialising scene…</p>
+    <p>Loading footage…</p>
   </div>
 
-  <div id="overlay">
-    <h1 class="overlay__title">ASTRO&nbsp;TECH</h1>
-    <p class="overlay__subtitle">GSAP camera parallax · Three.js</p>
-  </div>
+  <!-- Click-to-start fallback if the browser blocks muted autoplay -->
+  <button id="playgate" class="playgate" hidden aria-label="Play">
+    <span class="playgate__icon"></span>
+    <span class="playgate__label">Tap to enter</span>
+  </button>
+
+  <!-- Source video for the THREE.VideoTexture. Hidden; drawn onto the
+       3D plane. muted + playsinline + loop enables mobile autoplay. -->
+  <video
+    id="source"
+    muted
+    loop
+    playsinline
+    preload="auto"
+    crossorigin="anonymous"
+  >
+    <source src="./assets/astronaut.mp4" type="video/mp4" />
+    <source src="./assets/astronaut.webm" type="video/webm" />
+  </video>
+
+  <p id="caption" class="caption">GSAP camera in 3D · drag / move the cursor</p>
 
   <!-- renderer.domElement is appended to <body> by main.js -->
 
-  <!-- three.js + GSAP are vendored locally in /vendor so the scene runs
-       fully offline with no CDN dependency. -->
+  <!-- three.js + GSAP are vendored locally in /vendor (offline). -->
   <script type="importmap">
   {
     "imports": {

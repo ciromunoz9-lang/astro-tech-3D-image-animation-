@@ -1,75 +1,68 @@
 # Astro Tech · 3D Image Animation
 
-A layered space parallax scene built with **Three.js** and **GSAP**. Inspired by
-a cinematic "astronaut in orbit" clip, it composes a glowing golden sun, a
-cratered moon, a deep amber/white star field and a drifting debris field into a
-scene with real, depth-ordered parallax.
+The original astronaut clip, turned into a **3D experience** with
+**Three.js** + **GSAP**. The footage itself is left completely untouched — it
+plays on a plane inside a 3D scene, and the **camera** moves around it (dolly +
+mouse/touch parallax + tilt), so the flat video gains real dimensional camera
+motion. A field of dust particles floats between the camera and the plane, so
+every camera move parallaxes them across the footage for a genuine depth cue.
 
-Everything is generated procedurally on `<canvas>` — there are **no external
-image assets**, so the project runs straight from a static server.
+## How it works
 
-## Live structure
+| Piece            | Role                                                             |
+| ---------------- | --------------------------------------------------------------- |
+| `THREE.VideoTexture` | the clip drawn onto a plane, sized to always cover the viewport |
+| GSAP timeline    | slow looping camera **dolly** (yoyo) + endless dust drift        |
+| Pointer parallax | camera **translates** toward the cursor and **tilts** slightly   |
+| Dust particles   | float in front of the plane → parallax = depth against the video |
 
-The scene is organised into four `THREE.Group` layers, ordered by depth:
+The camera's ambient dolly (GSAP) drives a `dolly` object; the per-frame pointer
+parallax is composed **on top** of it in the render loop, so the two systems
+never overwrite each other. `prefers-reduced-motion` disables the ambient dolly.
 
-| Layer        | Group        | Content                    | Depth (z) | Parallax |
-| ------------ | ------------ | -------------------------- | --------- | -------- |
-| Background   | `background` | star field + nebula        | `-22`     | slight   |
-| Midground    | `midground`  | glowing sun (upper-right)  | `-9`      | moderate |
-| Foreground   | `foreground` | cratered moon (lower-left) | `1.5`     | dramatic |
-| Particles    | `particles`  | drifting amber debris      | —         | spins    |
+The plane is scaled to "cover" the 16:9 video at the farthest camera distance,
+with overscan, so panning/tilting the camera never reveals the plane edges.
 
-## Animation systems
+## Video sources & compatibility
 
-Two systems run at once, deliberately kept on **separate targets** so they
-compose rather than overwrite one another:
+The clip is provided in two formats so it plays everywhere:
 
-1. **GSAP ambient timeline** — a looping, yoyo camera dolly (`camera.position`),
-   gentle "breathing" on the sun/moon meshes, and an endless constant-speed spin
-   of the particle field (`particles.rotation`).
-2. **Mouse / touch parallax** — every layer follows the cursor in the **same
-   direction**, with amplitude scaling by proximity to the camera:
+```
+assets/astronaut.mp4    H.264  — best quality (Chrome, Edge, Safari, Firefox)
+assets/astronaut.webm   VP9    — fallback for browsers without H.264
+```
 
-   ```
-   Mouse moves right →
-     Background   moves slightly right
-     Midground    moves moderately right
-     Foreground   moves dramatically right
-   → REALISTIC DEPTH
-   ```
-
-   The camera also tilts subtly toward the cursor (`camera.rotation`).
-
-`prefers-reduced-motion` is respected: the ambient timeline is skipped for users
-who ask for reduced motion.
+Both are declared as `<source>` elements; the browser picks the first it can
+play. The video is `muted`, `loop`, `playsinline` so it autoplays; if a browser
+still blocks autoplay, a "tap to enter" gate starts it on the first click.
 
 ## Running locally
 
-The page loads Three.js (import map) and GSAP from a CDN, so serve it over HTTP
-rather than opening the file directly:
+Serve over HTTP (the video and modules won't load from a `file://` page):
 
 ```bash
-# from the project root
 python3 -m http.server 8000
-# then open http://localhost:8000
+# open http://localhost:8000
 ```
+
+Everything runs offline — Three.js and GSAP are vendored in `/vendor`.
 
 ## Files
 
 ```
-index.html        markup, import map, CDN scripts
-styles/style.css  layout, overlay title, loader
-js/main.js        scene, groups, GSAP timeline, parallax
-js/textures.js    procedural canvas textures (starfield, sun, moon, particle)
+index.html        markup, <video> sources, import map, vendored scripts
+styles/style.css  layout, loader, tap-to-start gate, caption
+js/main.js        scene, video plane, dust, GSAP camera dolly + parallax
+js/textures.js    procedural dust-particle sprite
+assets/           astronaut.mp4 + astronaut.webm
+vendor/           three.module.js + gsap.min.js
 ```
 
-## Swapping in real artwork
+## Tuning
 
-Any layer can use a real image instead of the procedural texture. In `main.js`,
-replace the `create*Texture()` call with a loaded image, e.g. a cut-out
-astronaut PNG for the foreground:
+In `js/main.js`:
 
-```js
-const astronaut = new THREE.TextureLoader().load("assets/astronaut.png");
-const fgMesh = addPlane(foreground, astronaut, { w: 5, h: 7, x: 0, y: -0.5 });
-```
+- `PAN` / `TILT` — how far the camera translates / rotates toward the cursor.
+- `OVERSCAN` — plane cover margin; raise it if you increase `PAN`/`TILT`.
+- The GSAP `tl.to(dolly, …)` block — the ambient camera move (distance & speed).
+- `DUST` — particle count for the depth field.
