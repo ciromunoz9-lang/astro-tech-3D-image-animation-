@@ -82,10 +82,17 @@ python3 -m http.server 8000
 ## Files
 
 ```
-index.html        demo page embedding the hero as a 16:9 block
-styles/style.css  demo-page chrome + .astro-hero block styling
+index.html        showcase landing page embedding the hero as a 16:9 block
+styles/style.css  demo-page UI chrome + .astro-hero block styling
 js/astro-hero.js  the reusable drop-in component (Three.js only)
+js/demo.js        demo-page wiring: live control dock, copy button, reveals
 assets/           photo.jpg + depth.png
 tools/            make_depth.py (depth-map generator)
 vendor/           three.module.js
 ```
+
+Only `js/astro-hero.js` (plus `vendor/` and your `assets/`) is needed to embed
+the hero. `js/demo.js` and the landing-page chrome are showcase-only. The demo
+page ships a **live control dock** (fill, framing, parallax, depth) wired to the
+component's runtime setters — handy for finding the right settings before you
+copy the snippet.

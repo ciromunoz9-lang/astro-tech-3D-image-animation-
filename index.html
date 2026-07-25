@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Astro Tech · 3D Photo Hero</title>
+  <meta
+    name="description"
+    content="A drop-in 3D-photo hero: a still + a depth map become a depth-parallax 3D photo. Self-contained 16:9 block, Three.js only, runs offline."
+  />
   <link
     rel="icon"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='38' fill='%23ffd257'/></svg>"
@@ -11,32 +15,173 @@
   <link rel="stylesheet" href="./styles/style.css" />
 </head>
 <body>
-  <main class="page">
-    <h1 class="page__title">Astro Tech</h1>
-    <p class="page__lead">A depth-parallax 3D photo — move your cursor over it.</p>
+  <div class="aurora" aria-hidden="true"></div>
 
-    <!-- ============================================================= -->
-    <!--  DROP-IN 3D PHOTO HERO  (16:9 embeddable block)               -->
-    <!--  Copy this block into any page; adjust data-* to taste.       -->
-    <!-- ============================================================= -->
-    <div
-      id="astro-hero"
-      class="astro-hero"
-      data-photo="./assets/photo.jpg"
-      data-depth="./assets/depth.png"
-      data-fill="0.55"
-      data-center-y="0.57"
-    ></div>
+  <!-- ===================== NAV ===================== -->
+  <header class="nav">
+    <div class="nav__inner">
+      <a class="brand" href="#top">
+        <span class="brand__dot" aria-hidden="true"></span>
+        Astro&nbsp;Tech
+      </a>
+      <nav class="nav__links">
+        <a href="#demo">Demo</a>
+        <a href="#features">Features</a>
+        <a href="#dropin">Drop-in</a>
+      </nav>
+      <a class="nav__cta" href="#dropin">Get the code</a>
+    </div>
+  </header>
 
-    <script type="importmap">
-      { "imports": { "three": "./vendor/three.module.js" } }
-    </script>
-    <script type="module" src="./js/astro-hero.js"></script>
-    <!-- ============================================================= -->
+  <main id="top" class="shell">
+    <!-- ===================== HERO ===================== -->
+    <section class="hero">
+      <span class="pill"><span class="pill__dot" aria-hidden="true"></span> Depth-parallax · Three.js only</span>
+      <h1 class="hero__title">
+        Turn a flat photo into a <span class="grad">living 3D scene</span>
+      </h1>
+      <p class="hero__lead">
+        A still plus a depth map becomes a depth-parallax "3D photo" — near pixels
+        shift more than far ones as the visitor moves the cursor, with a gentle
+        ambient sway when idle. Ships as a self-contained 16:9 block.
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="#demo">Try it live ↓</a>
+        <a class="btn btn--ghost" href="#dropin">Copy the snippet</a>
+      </div>
+    </section>
 
-    <p class="page__note">
-      16:9 block · self-contained · Three.js only · runs offline
-    </p>
+    <!-- ===================== LIVE STAGE ===================== -->
+    <section id="demo" class="stage reveal">
+      <div class="stage__frame">
+        <!--  DROP-IN 3D PHOTO HERO  (16:9 embeddable block)  -->
+        <div
+          class="astro-hero"
+          data-photo="./assets/photo.jpg"
+          data-depth="./assets/depth.png"
+          data-fill="0.55"
+          data-center-y="0.57"
+        ></div>
+
+        <!-- live control dock (demo-only chrome) -->
+        <div class="dock" role="group" aria-label="Live hero controls">
+          <div class="dock__group">
+            <label class="dock__label" for="ctl-fill">Fill <b id="val-fill">0.55</b></label>
+            <input id="ctl-fill" type="range" min="0.2" max="1" step="0.01" value="0.55" />
+          </div>
+          <div class="dock__group">
+            <label class="dock__label" for="ctl-centerY">Framing <b id="val-centerY">0.57</b></label>
+            <input id="ctl-centerY" type="range" min="0.4" max="0.75" step="0.01" value="0.57" />
+          </div>
+          <div class="dock__group">
+            <label class="dock__label" for="ctl-pointerAmp">Parallax <b id="val-pointerAmp">0.026</b></label>
+            <input id="ctl-pointerAmp" type="range" min="0" max="0.06" step="0.002" value="0.026" />
+          </div>
+          <div class="dock__group">
+            <label class="dock__label" for="ctl-zoom">Depth <b id="val-zoom">1.08</b></label>
+            <input id="ctl-zoom" type="range" min="1" max="1.25" step="0.01" value="1.08" />
+          </div>
+          <button id="dock-reset" class="dock__reset" type="button">Reset</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== STATS ===================== -->
+    <section class="stats reveal" aria-label="At a glance">
+      <div class="stat"><b>1</b><span>Dependency</span></div>
+      <div class="stat"><b>16:9</b><span>Drop-in block</span></div>
+      <div class="stat"><b>0 KB</b><span>Network calls</span></div>
+      <div class="stat"><b>60 FPS</b><span>GPU shader</span></div>
+    </section>
+
+    <!-- ===================== FEATURES ===================== -->
+    <section id="features" class="section">
+      <div class="section__head reveal">
+        <span class="pill">Why it feels good</span>
+        <h2 class="section__title">Built for craft, tuned for speed</h2>
+        <p class="section__sub">
+          Every interaction is GPU-driven and eased, so it reads as premium on a
+          laptop and holds up on a phone — tilt included.
+        </p>
+      </div>
+      <div class="features">
+        <article class="card reveal">
+          <div class="card__icon" aria-hidden="true">🪐</div>
+          <h3>True depth parallax</h3>
+          <p>A per-pixel depth map drives the shift, so foreground and background separate with real dimensionality — not a flat CSS tilt.</p>
+        </article>
+        <article class="card reveal">
+          <div class="card__icon" aria-hidden="true">🖱️</div>
+          <h3>Pointer, touch &amp; tilt</h3>
+          <p>Follows the cursor, tracks touch, and reads device orientation on mobile. Idle? A calm ambient sway keeps it alive.</p>
+        </article>
+        <article class="card reveal">
+          <div class="card__icon" aria-hidden="true">📦</div>
+          <h3>Genuinely drop-in</h3>
+          <p>One <code>&lt;div&gt;</code>, one module script. Auto-mounts, supports multiple heroes per page, and tears down cleanly.</p>
+        </article>
+        <article class="card reveal">
+          <div class="card__icon" aria-hidden="true">⚡</div>
+          <h3>Offline &amp; tiny</h3>
+          <p>Three.js is vendored locally — no CDN, no tracking, no runtime network calls. Ships as static files.</p>
+        </article>
+        <article class="card reveal">
+          <div class="card__icon" aria-hidden="true">🎚️</div>
+          <h3>Live-tunable</h3>
+          <p>Retune fill, framing, parallax and depth at runtime through a small API — the sliders above are wired straight to it.</p>
+        </article>
+        <article class="card reveal">
+          <div class="card__icon" aria-hidden="true">♿</div>
+          <h3>Respects the user</h3>
+          <p>Honors <code>prefers-reduced-motion</code>, emits ready/error events, and degrades gracefully when textures fail to load.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===================== DROP-IN CODE ===================== -->
+    <section id="dropin" class="section">
+      <div class="section__head reveal">
+        <span class="pill">Copy · paste · ship</span>
+        <h2 class="section__title">Drop it into any page</h2>
+        <p class="section__sub">
+          Host the <code>assets/</code>, <code>vendor/</code> and <code>js/</code>
+          folders alongside it, then paste the block below.
+        </p>
+      </div>
+
+      <div class="codewrap reveal">
+        <div class="codewrap__bar">
+          <i></i><i></i><i></i>
+          <span class="codewrap__name">index.html</span>
+          <button class="copy" type="button" data-copy-target="#snippet">Copy</button>
+        </div>
+<pre id="snippet"><span class="cmt">&lt;!-- 3D photo hero · 16:9 block --&gt;</span>
+<span class="tag">&lt;div</span>
+  <span class="attr">id</span>=<span class="str">"astro-hero"</span>
+  <span class="attr">data-photo</span>=<span class="str">"./assets/photo.jpg"</span>
+  <span class="attr">data-depth</span>=<span class="str">"./assets/depth.png"</span>
+  <span class="attr">data-fill</span>=<span class="str">"0.55"</span>
+  <span class="attr">data-center-y</span>=<span class="str">"0.57"</span>
+  <span class="attr">style</span>=<span class="str">"width:100%; max-width:1600px; aspect-ratio:16/9;"</span>
+<span class="tag">&gt;&lt;/div&gt;</span>
+
+<span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="str">"importmap"</span><span class="tag">&gt;</span>
+  { "imports": { "three": "./vendor/three.module.js" } }
+<span class="tag">&lt;/script&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="str">"module"</span> <span class="attr">src</span>=<span class="str">"./js/astro-hero.js"</span><span class="tag">&gt;&lt;/script&gt;</span></pre>
+      </div>
+    </section>
   </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer">
+    <p class="footer__note">16:9 block · self-contained · Three.js only · runs offline</p>
+  </footer>
+
+  <!-- demo bootstrapping: mounts the hero + wires the page chrome -->
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three.module.js" } }
+  </script>
+  <script type="module" src="./js/demo.js"></script>
 </body>
 </html>

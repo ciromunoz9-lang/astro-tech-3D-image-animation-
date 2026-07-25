@@ -248,11 +248,28 @@ export function mountAstroHero(el, opts = {}) {
 
   return {
     el,
+    cfg,
+    uniforms,
     setFill(v) {
       uniforms.uFill.value = v;
+      cfg.fill = v;
     },
     setCenterY(v) {
       uniforms.uCenterY.value = v;
+      cfg.centerY = v;
+    },
+    setZoom(v) {
+      uniforms.uZoom.value = v;
+      cfg.zoom = v;
+    },
+    setPointerAmp(v) {
+      cfg.pointerAmp = v;
+    },
+    setAmbientAmp(v) {
+      cfg.ambientAmp = v;
+    },
+    setVignette(v) {
+      uniforms.uVignette.value = v;
     },
     destroy() {
       cancelAnimationFrame(raf);
